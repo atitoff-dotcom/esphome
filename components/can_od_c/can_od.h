@@ -3,16 +3,17 @@
 
 #include "driver/twai.h"
 #include "driver/gpio.h"
+#include "esp_rom_gpio.h"
 #include <vector>
 
 #ifdef __cplusplus
 #include "esphome/core/component.h"
 #include "esphome/core/automation.h"
+#include "esphome/core/log.h"
 
 namespace esphome {
 namespace can_od_c {
 
-// Структура для передачи данных в лямбды ESPHome
 struct CANODFrame {
     uint32_t can_id;
     std::vector<uint8_t> data;
@@ -22,18 +23,18 @@ class CANODComponent : public Component {
  public:
   uint32_t pin_tx_num;
   uint32_t pin_rx_num;
-  
+
   // Колбэк для автоматизации при получении кадра
   Callback<void(uint32_t, std::vector<uint8_t>)> on_frame_callback;
 
   void setup() override {
-    // Расчет таймингов под 25 кГц для тактовой частоты TWAI 80 МГц
+    // Настройка таймингов под 25 кГц для тактовой частоты TWAI 80 МГц
     twai_timing_config_t t_config = {
         .brp = 200,           // Делитель: 80MHz / (16 * 25kHz) = 200
-        .prop_seg = 7,        
-        .phase_seg1 = 5,      
-        .phase_seg2 = 3,      // Итого 1 + 7 + 5 + 3 = 16 TQ на бит
-        .sjw = 3,             
+        .prop_seg = 7,
+        .phase_seg1 = 5,
+        .phase_seg2 = 3,      // Итого 1 + 7 + 5 + 3 = 16 TQ на один бит
+        .sjw = 3,
         .triple_sampling = false
     };
 
@@ -52,7 +53,7 @@ class CANODComponent : public Component {
     twai_filter_config_t f_config = TWAI_FILTER_CONFIG_ACCEPT_ALL();
 
     if (twai_driver_install(&g_config, &t_config, &f_config) == ESP_OK) {
-        // Конфигурируем физический Pad пина TX в режим Open Drain
+        // Конфигурируем физический Pad пина TX в аппаратный режим Open Drain
         gpio_config_t tx_pad_conf = {
             .pin_bit_mask = (1ULL << pin_tx_num),
             .mode = GPIO_MODE_INPUT_OUTPUT_OD, // Смена режима на открытый сток
@@ -76,10 +77,11 @@ class CANODComponent : public Component {
     if (twai_receive(&message, 0) == ESP_OK) {
         if (!(message.rtr)) { // Обрабатываем только Data-фреймы (не RTR)
             std::vector<uint8_t> frame_data;
+            frame_data.reserve(message.data_length_code);
             for (int i = 0; i < message.data_length_code; i++) {
                 frame_data.push_back(message.data[i]);
             }
-            // Передаем ID и массив байт в ESPHome автоматизацию
+            // Передаем ID и массив байт в автоматизацию ESPHome
             this->on_frame_callback.call(message.identifier, frame_data);
         }
     }
