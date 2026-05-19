@@ -1,0 +1,23 @@
+esphome:
+  name: peref1-1-1
+
+esp32:
+  board: esp32-c3-devkitm-1
+  framework: { type: esp-idf }
+
+external_components: [{source: {type: local, path: custom_components}}]
+wifi: { ssid: "Your_WiFi", password: "Password" }
+
+esphome:
+  on_boot:
+    priority: 200.0
+    then: [- lambda: 'wifi::global_wifi_component->stop();']
+
+can:
+  id: my_can_bus
+  pin: GPIO5
+
+binary_sensor:
+  - platform: can
+    id: wall_button
+    pin: { number: GPIO10, mode: INPUT_PULLUP, inverted: true }

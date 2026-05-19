@@ -1,0 +1,15 @@
+esphome:
+  name: gateway-1
+
+esp32:
+  board: esp32dev
+  framework: { type: esp-idf }
+
+external_components: [{source: {type: local, path: custom_components}}]
+
+can:
+  id: my_gateway_hub
+  pin: GPIO5
+
+logger:
+api:
