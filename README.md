@@ -56,3 +56,31 @@ interval:
           // Отправляем пакет с ID 0x100 через наш компонент
           id(my_can_bus).send_frame(0x100, packet);
 ```
+
+### ec_meter_c
+
+```yaml
+# Подключаем строго определенные компоненты из вашего репозитория
+external_components:
+  - source: github://atitoff-dotcom/esphome@main
+    components: [ nst1001_c, ec_meter_c ]
+
+sensor:
+  # Датчик температуры NST1001
+  - platform: nst1001_c
+    id: water_temp_nst
+    name: "Nutrient Temperature"
+    pin_dq: 5
+    update_interval: 2s
+
+  # Датчик EC с компенсацией
+  - platform: ec_meter_c
+    id: hydroponics_ec
+    name: "Nutrient EC"
+    pin_drive: 2
+    adc_channel: 1
+    temperature_sensor_id: water_temp_nst
+    r_balance: 1000.0
+    k_cell: 1.0
+    update_interval: 2s
+```
