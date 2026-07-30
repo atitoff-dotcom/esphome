@@ -26,9 +26,12 @@ void CANHub::setup() {
     twai_start();
     gpio_set_direction(gpio_num, GPIO_MODE_INPUT_OUTPUT_OD);
     this->initialized_ = true;
-    // Сообщаем шлюзу при старте, что WiFi на периферии выключен
+    // Сообщаем шлюзу при старте, что WiFi на периферии выключен и гасим его локально
     if (this->my_stat_id_ != 0) {
       this->send_frame(this->my_stat_id_, 0xFF, 0xFF, {0x00});
+      if (wifi::global_wifi_component != nullptr) {
+        wifi::global_wifi_component->stop();
+      }
     }
     // Инициализируем статус-сенсор WiFi шлюза
     if (this->wifi_status_sensor_ != nullptr) {
