@@ -3,9 +3,6 @@
 #include "esphome/core/hal.h"
 #include "driver/twai.h"
 #include <vector>
-#include "can_binary_sensor.h"
-#include "can_sensor.h"
-#include "can_number.h"
 #include "esphome/components/text_sensor/text_sensor.h"
 
 namespace esphome {

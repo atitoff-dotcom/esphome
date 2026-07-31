@@ -30,7 +30,7 @@ void CANHub::setup() {
     if (this->my_stat_id_ != 0) {
       this->send_frame(this->my_stat_id_, 0xFF, 0xFF, {0x00});
       if (wifi::global_wifi_component != nullptr) {
-        wifi::global_wifi_component->stop();
+        wifi::global_wifi_component->disable();
       }
     }
     // Инициализируем статус-сенсор WiFi шлюза
@@ -45,16 +45,15 @@ void CANHub::loop() {
   twai_message_t message;
   while (twai_receive(&message, 0) == ESP_OK) {
     if (!message.extd && message.data_length_code >= 2) {
-      uint8_t index = message.data;
+      uint8_t index = message.data[0];
       uint8_t type = message.data[1];
       if (index == 0xFF && type == 0xFF && message.identifier == this->my_cmd_id_) {
         if (wifi::global_wifi_component != nullptr) {
           if (message.data_length_code >= 3 && message.data[2] == 0x01) {
-            wifi::global_wifi_component->start();
-            wifi::global_wifi_component->resume();
+            wifi::global_wifi_component->enable();
             this->send_frame(this->my_stat_id_, 0xFF, 0xFF, {0x01});
           } else {
-            wifi::global_wifi_component->stop();
+            wifi::global_wifi_component->disable();
             this->send_frame(this->my_stat_id_, 0xFF, 0xFF, {0x00});
           }
         }
@@ -73,7 +72,7 @@ bool CANHub::send_frame(uint32_t can_id, uint8_t index, uint8_t type, const std:
   twai_message_t message;
   message.identifier = can_id; message.extd = 0; message.rtr = 0;
   message.data_length_code = std::min((size_t)8, 2 + data.size());
-  message.data = index; message.data[1] = type;
+  message.data[0] = index; message.data[1] = type;
   for (size_t i = 0; i < data.size() && i < 6; i++) message.data[2 + i] = data[i];
   return twai_transmit(&message, pdMS_TO_TICKS(10)) == ESP_OK;
 }
@@ -81,7 +80,7 @@ bool CANHub::send_frame(uint32_t can_id, uint8_t index, uint8_t type, const std:
 void CANHub::set_active_wifi_p_id(uint32_t p_id) {
   if (this->wifi_status_sensor_ != nullptr) {
     char buf[32];
-    snprintf(buf, sizeof(buf), "Активен peref%d-%d", this->gateway_id_, p_id);
+    snprintf(buf, sizeof(buf), "Активен peref%u-%u", this->gateway_id_, p_id);
     this->wifi_status_sensor_->publish_state(buf);
   }
 }
