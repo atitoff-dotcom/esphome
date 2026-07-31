@@ -25,7 +25,7 @@ class CANBinarySensor : public binary_sensor::BinarySensor, public Component, pu
     
     // Автоматическая отправка статуса в CAN-шину при изменении состояния
     this->add_on_state_callback([this](bool state) {
-      this->parent_->send_frame(this->stat_id_, this->index_, this->type_, {state ? 0x01 : 0x00});
+      this->parent_->send_frame(this->stat_id_, this->index_, this->type_, {(uint8_t) (state ? 0x01 : 0x00)});
     });
   }
 

@@ -183,7 +183,7 @@ async def setup_peripheral_platform_template(config, cpp_class, register_fn, dom
     from . import can_ns, CANHub, IS_GATEWAY_COMPILATION, CONF_BIND_TO, find_source_by_component_id
     if IS_GATEWAY_COMPILATION: return None
     var = cg.new_Pvariable(config[CONF_ID])
-    cg.add(cg.App.register_component(var))
+    await cg.register_component(var, config)
     await register_fn(var, config)
     parent = await cg.get_variable(config["can_hub_id"])
     cg.add(var.set_parent(parent))
