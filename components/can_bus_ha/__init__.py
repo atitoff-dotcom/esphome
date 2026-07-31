@@ -17,6 +17,7 @@ CANNumber = can_ns.class_('CANNumber', number.Number, cg.Component)
 CONF_BIND_TO = "bind_to"
 DOMAINS = ["switch", "binary_sensor", "sensor", "number"]
 IS_GATEWAY_COMPILATION = False
+AUTO_LOAD = ["switch", "binary_sensor", "sensor", "number", "text_sensor"]
 
 CONFIG_SCHEMA = cv.Schema({
     cv.Required(CONF_ID): cv.declare_id(CANHub),
