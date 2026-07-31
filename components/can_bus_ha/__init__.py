@@ -20,7 +20,7 @@ IS_GATEWAY_COMPILATION = False
 
 CONFIG_SCHEMA = cv.Schema({
     cv.Required(CONF_ID): cv.declare_id(CANHub),
-    cv.Required(CONF_PIN): pins.internal_gpio_pin_schema,
+    cv.Required(CONF_PIN): pins.internal_gpio_output_pin_schema,
     cv.Optional("bitrate", default=25000): cv.int_,
     cv.Optional("gateway_id"): cv.int_,
     cv.Optional("peripheral_id"): cv.int_,
