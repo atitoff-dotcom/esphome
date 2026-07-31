@@ -166,6 +166,18 @@ async def build_gateway_entities(parent, net_map, gateway_id):
     cg.add(parent.set_wifi_status_sensor(svar_status))
 
 
+HUB_COUNTERS = {}
+
+def get_hub_counter(hub_id, counter_attr):
+    if hub_id not in HUB_COUNTERS:
+        HUB_COUNTERS[hub_id] = {}
+    return HUB_COUNTERS[hub_id].get(counter_attr, 0)
+
+def increment_hub_counter(hub_id, counter_attr):
+    if hub_id not in HUB_COUNTERS:
+        HUB_COUNTERS[hub_id] = {}
+    HUB_COUNTERS[hub_id][counter_attr] = HUB_COUNTERS[hub_id].get(counter_attr, 0) + 1
+
 async def setup_peripheral_platform_template(config, cpp_class, register_fn, domain_type, counter_attr):
     from . import can_ns, CANHub, IS_GATEWAY_COMPILATION, CONF_BIND_TO, find_source_by_component_id
     if IS_GATEWAY_COMPILATION: return None
@@ -174,9 +186,10 @@ async def setup_peripheral_platform_template(config, cpp_class, register_fn, dom
     await register_fn(var, config)
     parent = await cg.get_variable(config["can_hub_id"])
     cg.add(var.set_parent(parent))
-    idx = getattr(parent, counter_attr, 0)
+    hub_id = str(config["can_hub_id"])
+    idx = get_hub_counter(hub_id, counter_attr)
     cg.add(var.set_meta(idx, domain_type))
-    setattr(parent, counter_attr, idx + 1)
+    increment_hub_counter(hub_id, counter_attr)
     if CONF_BIND_TO in config:
         src_can_id, src_idx, src_type = find_source_by_component_id(config[CONF_BIND_TO])
         cg.add(var.set_listen_source(src_can_id, src_idx, src_type))
