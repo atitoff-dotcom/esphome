@@ -172,7 +172,7 @@ async def setup_peripheral_platform_template(config, cpp_class, register_fn, dom
     var = cg.new_Pvariable(config[CONF_ID])
     cg.add(cg.App.register_component(var))
     await register_fn(var, config)
-    parent = cg.use_id(CANHub)(config["can_hub_id"])
+    parent = await cg.get_variable(config["can_hub_id"])
     cg.add(var.set_parent(parent))
     idx = getattr(parent, counter_attr, 0)
     cg.add(var.set_meta(idx, domain_type))
