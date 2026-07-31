@@ -1,4 +1,4 @@
-# Компонент CAN Bus Home Assistant (can_bus_ha)
+# Компонент CAN Bus Home Assistant (can_bus_ha_c)
 
 Кастомный компонент ESPHome для построения распределенной сети умного дома на шине CAN (1-wire или 2-wire) с автоматической интеграцией в Home Assistant.
 
@@ -28,7 +28,7 @@
 ## ⚙️ Конфигурация компонента и защита от флуда
 
 ### 1. Настройка адресации (Хаб CAN)
-Для каждого устройства на шине CAN необходимо явно прописать его роль и адреса в блоке `can_bus_ha`:
+Для каждого устройства на шине CAN необходимо явно прописать его роль и адреса в блоке `can_bus_ha_c`:
 
 ```yaml
 # Конфигурация для Шлюза (gateway-1) на плате WT32-ETH01 (Ethernet)
@@ -48,7 +48,7 @@ ethernet:
   clk_mode: GPIO0_IN
   phy_addr: 1
 
-can_bus_ha:
+can_bus_ha_c:
   id: my_gateway_hub
   pin: GPIO5            # GPIO5 (свободный пин) для 1-wire CAN
   gateway_id: 1        # Уникальный ID шлюза
@@ -57,7 +57,7 @@ can_bus_ha:
 # Конфигурация для Периферийного модуля (peref)
 
 ```yaml
-can_bus_ha:
+can_bus_ha_c:
   id: my_can_bus
   pin: GPIO5
   gateway_id: 1        # К какому шлюзу подключена шина
@@ -71,7 +71,7 @@ can_bus_ha:
 
 
 sensor:
-  - platform: can_bus_ha
+  - platform: can_bus_ha_c
     id: room_temperature
     name: "Room Temperature"
     min_send_interval: 5s  # Отправлять в CAN не чаще раза в 5 секунд
@@ -82,27 +82,27 @@ sensor:
 
 ## 📋 Практические примеры реализации
 
-Вся прелесть архитектуры примитивов заключается в том, что на периферийных модулях мы объявляем только базовые сущности (`can_bus_ha`), а на стороне Home Assistant собираем их в красивые интерфейсные шаблоны.
+Вся прелесть архитектуры примитивов заключается в том, что на периферийных модулях мы объявляем только базовые сущности (`can_bus_ha_c`), а на стороне Home Assistant собираем их в красивые интерфейсные шаблоны.
 
 ### Пример 1: Управление диммируемым светом (диммер)
 Свет управляется двумя примитивами: Вкл/Выкл (`switch`) и Яркость 0-100% (`number`).
 
 #### Конфигурация на периферийном модуле (Устройство 3):
 ```yaml
-# can_bus_ha/tst/perefn-1-2.yaml
-can_bus_ha:
+# can_bus_ha_c/tst/perefn-1-2.yaml
+can_bus_ha_c:
   id: my_can_bus
   pin: GPIO5
 
 switch:
-  - platform: can_bus_ha
+  - platform: can_bus_ha_c
     id: light_on_off
     name: "Livingroom Light Power"
     on_turn_on:  [- gpio.digital_write: { pin: GPIO4, value: high }]
     on_turn_off: [- gpio.digital_write: { pin: GPIO4, value: low }]
 
 number:
-  - platform: can_bus_ha
+  - platform: can_bus_ha_c
     id: light_brightness
     name: "Livingroom Light Brightness"
     min_value: 0
@@ -154,7 +154,7 @@ light:
 ```yaml
 # cover_peripheral.yaml
 number:
-  - platform: can_bus_ha
+  - platform: can_bus_ha_c
     id: cover_position
     name: "Bedroom Cover Position"
     min_value: 0
@@ -218,13 +218,13 @@ sensor:
             state: !lambda 'return x;'
 
   # 2. CAN-транспорт для отправки температуры в HA
-  - platform: can_bus_ha
+  - platform: can_bus_ha_c
     id: room_temperature
     name: "Room Current Temperature"
 
 # 3. CAN-транспорт для получения целевой температуры (уставки) от HA
 number:
-  - platform: can_bus_ha
+  - platform: can_bus_ha_c
     id: target_temperature
     name: "Room Target Temperature"
     min_value: 16
@@ -253,18 +253,18 @@ climate:
 
 #### Координатор кнопки (Устройство 2):
 ```yaml
-# components/can_bus_ha/tst/peref1-1-1.yaml
+# components/can_bus_ha_c/tst/peref1-1-1.yaml
 binary_sensor:
-  - platform: can_bus_ha
+  - platform: can_bus_ha_c
     id: wall_button
     pin: { number: GPIO10, mode: INPUT_PULLUP, inverted: true }
 ```
 
 #### Исполнитель реле (Устройство 3):
 ```yaml
-# components/can_bus_ha/tst/perefn-1-2.yaml
+# components/can_bus_ha_c/tst/perefn-1-2.yaml
 switch:
-  - platform: can_bus_ha
+  - platform: can_bus_ha_c
     id: relay_1
     bind_to: wall_button   # <--- Автоматически подпишется на статус кнопки с Устройства 2
     on_turn_on:  [- gpio.digital_write: { pin: GPIO4, value: high }]
@@ -294,7 +294,7 @@ switch:
 ## 📶 Удаленная прошивка по WiFi (OTA) и поддержка нескольких шлюзов
 
 ### 1. Как работает удаленная прошивка через CAN и защита от шторма
-По умолчанию на периферийных модулях WiFi автоматически отключается при старте компонентом `can_bus_ha` для снижения энергопотребления, электромагнитного шума и повышения стабильности (C++ код делает это автоматически при инициализации, поэтому прописывать `on_boot` в YAML-конфигурациях периферии **не требуется**).
+По умолчанию на периферийных модулях WiFi автоматически отключается при старте компонентом `can_bus_ha_c` для снижения энергопотребления, электромагнитного шума и повышения стабильности (C++ код делает это автоматически при инициализации, поэтому прописывать `on_boot` в YAML-конфигурациях периферии **не требуется**).
 
 Для прошивки модуля "по воздуху" (OTA) выполните следующие шаги:
 1. Шлюз автоматически генерирует в Home Assistant виртуальный переключатель для каждого модуля: `switch.peref{gateway_id}_{p_id}_wifi` (например, `switch.peref1_2_wifi`).

@@ -9,7 +9,7 @@
 #include "esphome/components/text_sensor/text_sensor.h"
 
 namespace esphome {
-namespace can_bus_ha {
+namespace can_bus_ha_c {
 
 class CANEntity {
  public:

@@ -30,9 +30,9 @@ external_components:
   - source:
       type: local
       path: components
-    components: [ can_bus_ha ]
+    components: [ can_bus_ha_c ]
 
-can_bus_ha:
+can_bus_ha_c:
   id: my_can_bus
   pin: GPIO5
   gateway_id: 1        # К какому шлюзу подключена шина
@@ -41,7 +41,7 @@ can_bus_ha:
 
 
 sensor:
-  - platform: can_bus_ha
+  - platform: can_bus_ha_c
     id: room_temperature
     name: "Room Temperature"
     min_send_interval: 5s  # Отправлять в CAN не чаще раза в 5 секунд

@@ -3,7 +3,7 @@
 #include "can.h"
 
 namespace esphome {
-namespace can_bus_ha {
+namespace can_bus_ha_c {
 
 class CANSwitch : public switch_::Switch, public Component, public CANEntity {
  public:

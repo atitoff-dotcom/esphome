@@ -6,7 +6,7 @@ from esphome.const import CONF_ID, CONF_PIN, CONF_NAME
 import os
 import re
 
-can_ns = cg.esphome_ns.namespace('can_bus_ha')
+can_ns = cg.esphome_ns.namespace('can_bus_ha_c')
 CANHub = can_ns.class_('CANHub', cg.Component)
 
 CANSwitch = can_ns.class_('CANSwitch', switch.Switch, cg.Component)
@@ -34,8 +34,8 @@ def get_network_map(target_gateway_id):
             try:
                 content = yaml_util.load_yaml(os.path.join(current_dir, file))
                 if not content or "esphome" not in content: continue
-                if "can_bus_ha" not in content: continue
-                can_cfg = content["can_bus_ha"]
+                if "can_bus_ha_c" not in content: continue
+                can_cfg = content["can_bus_ha_c"]
                 g_id = can_cfg.get("gateway_id")
                 p_id = can_cfg.get("peripheral_id")
                 if g_id == target_gateway_id and p_id is not None:
@@ -46,7 +46,7 @@ def get_network_map(target_gateway_id):
                             items = content[d]
                             if isinstance(items, dict): items = [items]
                             for item in items:
-                                if item.get("platform") == "can_bus_ha":
+                                if item.get("platform") == "can_bus_ha_c":
                                     net_map[peref_key][d].append({
                                         "id": str(item.get("id")),
                                         "name": item.get("name"),
@@ -65,8 +65,8 @@ def find_source_by_component_id(target_id):
             try:
                 content = yaml_util.load_yaml(os.path.join(current_dir, file))
                 if not content or "esphome" not in content: continue
-                if "can_bus_ha" not in content: continue
-                can_cfg = content["can_bus_ha"]
+                if "can_bus_ha_c" not in content: continue
+                can_cfg = content["can_bus_ha_c"]
                 p_id = can_cfg.get("peripheral_id")
                 if p_id is None: continue
                 for d, type_code in domain_types.items():
