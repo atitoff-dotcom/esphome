@@ -82,6 +82,9 @@ def find_source_by_component_id(target_id):
 
 async def to_code(config):
     global IS_GATEWAY_COMPILATION
+    from esphome.components.esp32 import include_builtin_idf_component
+    include_builtin_idf_component("driver")
+    include_builtin_idf_component("esp_driver_twai")
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
     
