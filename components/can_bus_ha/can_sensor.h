@@ -5,7 +5,7 @@
 #include <cmath>
 
 namespace esphome {
-namespace can_bus_ha_c {
+namespace can_bus_ha {
 
 class CANSensor : public sensor::Sensor, public Component, public CANEntity {
  public:

@@ -4,7 +4,7 @@
 #include "can_switch.h"
 
 namespace esphome {
-namespace can_bus_ha_c {
+namespace can_bus_ha {
 
 static const char *const TAG = "can.hub";
 

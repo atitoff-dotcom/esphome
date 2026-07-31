@@ -4,7 +4,7 @@
 #include <cstring>
 
 namespace esphome {
-namespace can_bus_ha_c {
+namespace can_bus_ha {
 
 class CANNumber : public number::Number, public Component, public CANEntity {
  public:

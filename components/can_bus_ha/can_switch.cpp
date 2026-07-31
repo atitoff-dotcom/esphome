@@ -1,7 +1,7 @@
 #include "can_switch.h"
 
 namespace esphome {
-namespace can_bus_ha_c {
+namespace can_bus_ha {
 
 void CANSwitch::setup() {
   this->parent_->register_listener(this);

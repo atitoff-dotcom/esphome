@@ -4,6 +4,6 @@
     "ec_meter_c",
     "nst1001_c",
     "can_od_c",
-    "can_bus_ha_c"
+    "can_bus_ha"
   ]
 }
