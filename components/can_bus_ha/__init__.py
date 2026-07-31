@@ -18,6 +18,7 @@ CONF_BIND_TO = "bind_to"
 DOMAINS = ["switch", "binary_sensor", "sensor", "number"]
 IS_GATEWAY_COMPILATION = False
 AUTO_LOAD = ["switch", "binary_sensor", "sensor", "number", "text_sensor"]
+DEPENDENCIES = ["esp32"]
 
 CONFIG_SCHEMA = cv.Schema({
     cv.Required(CONF_ID): cv.declare_id(CANHub),
