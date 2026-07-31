@@ -1,0 +1,48 @@
+esphome:
+  name: tst
+  friendly_name: tst
+
+esp32:
+  variant: esp32c5
+  flash_size: 4MB
+  framework:
+    type: esp-idf
+
+logger:
+
+api:
+  encryption:
+    key: "sBdbvQ13FLHmlLxm52fe0m0mzFwDcK+pds71a8WUWjU="
+
+ota:
+  - platform: esphome
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  ap:
+    ssid: tst Fallback Hotspot
+    password: "4bs21ZSzlXa8"
+
+captive_portal:
+
+external_components:
+  - source:
+      type: local
+      path: components
+    components: [ can_bus_ha ]
+
+can_bus_ha:
+  id: my_can_bus
+  pin: GPIO5
+  gateway_id: 1        # К какому шлюзу подключена шина
+  peripheral_id: 2     # Уникальный ID модуля на данной шине (1-255)
+  bitrate: 25000       # Скорость шины CAN (по умолчанию 25000)
+
+
+sensor:
+  - platform: can_bus_ha
+    id: room_temperature
+    name: "Room Temperature"
+    min_send_interval: 5s  # Отправлять в CAN не чаще раза в 5 секунд
+    send_delta: 0.1        # Отправлять в CAN только если значение изменилось на 0.1 или более
