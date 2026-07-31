@@ -5,8 +5,7 @@ from esphome.const import CONF_ID, CONF_NAME
 from . import can_ns, setup_peripheral_platform_template, CONF_BIND_TO
 
 CANNumber = can_ns.class_('CANNumber', number.Number, cg.Component)
-CONFIG_SCHEMA = number.number_schema.extend({
-    cv.GenerateID(): cv.declare_id(CANNumber),
+CONFIG_SCHEMA = number.number_schema(CANNumber).extend({
     cv.GenerateID("can_hub_id"): cv.use_id(can_ns.class_('CANHub')),
     cv.Optional(CONF_NAME): cv.string,
     cv.Optional(CONF_BIND_TO): cv.string,

@@ -5,8 +5,7 @@ from esphome.const import CONF_ID, CONF_NAME
 from . import can_ns, setup_peripheral_platform_template, CONF_BIND_TO
 
 CANSensor = can_ns.class_('CANSensor', sensor.Sensor, cg.Component)
-CONFIG_SCHEMA = sensor.sensor_schema.extend({
-    cv.GenerateID(): cv.declare_id(CANSensor),
+CONFIG_SCHEMA = sensor.sensor_schema(CANSensor).extend({
     cv.GenerateID("can_hub_id"): cv.use_id(can_ns.class_('CANHub')),
     cv.Optional(CONF_NAME): cv.string,
     cv.Optional(CONF_BIND_TO): cv.string,
